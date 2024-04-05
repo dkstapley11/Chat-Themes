@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wordplay | Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        var currentTheme = 'default'; // This will hold the current theme
+        function handleButtonClick(theme) {
+            // Set the current theme
+            currentTheme = theme;d
+
+            // Optionally, provide visual feedback that the theme is selected
+            // For example, highlight the selected theme button
+            var buttons = document.querySelectorAll('.button-row button');
+            buttons.forEach(button => {
+                if(button.getAttribute('data-theme') === theme) {
+                    button.classList.add('selected'); // CSS class for selected theme
+                } else {
+                    button.classList.remove('selected');
+                }
+            });
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port); // Connect to the server's WebSocket
+    
+        // Function to send message
+        function sendMessage() {
+            var text = document.getElementById('text-input').value;
+            socket.emit('message', {text: text, theme: currentTheme});
+            document.getElementById('text-input').value = ''; // Clear the input after sending
+        }
+    
+        // Listen for messages from the server
+        socket.on('message', function(data) {
+            var messageContainer = document.getElementById('message-container');
+            var messageElement = document.createElement('div');
+            messageElement.textContent = data.text; // Assuming 'text' is what you're sending from the client
+            messageElement.className = 'message-bubble';
+            messageContainer.appendChild(messageElement);
+            console.log('Received message:', data.text);
+        });
+    </script>
+</head>
+<body>
+    <div class="banner">
+        <div class="navbar">
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Work</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <h1>WORDPLAY</h1>
+            <p>Transform your texts at the click of a button</p>
+            <input type="text" id="text-input" placeholder="Enter your message here">
+            <div id="message-container">
+                <!-- Messages will be displayed here -->
+            </div>
+            <div class="button-row">
+            <button type="button" data-theme="pirate" onclick="handleButtonClick('pirate')">PIRATE</button>
+            <button type="button" data-theme="ditzyblonde" onclick="handleButtonClick('ditzyblonde')">DITZY BLONDE</button>
+            <button type="button" data-theme="cowboy" onclick="handleButtonClick('cowboy')">COWBOY</button>
+        </div>
+        <div class="button-row">
+            <button type="button" data-theme="shakespeare" onclick="handleButtonClick('shakespeare')">SHAKESPEARE</button>
+            <button type="button" data-theme="fourtiesmafia'" onclick="handleButtonClick('fourtiesmafia')">'40s MAFIA</button>
+            <button type="button" data-theme="yoda" onclick="handleButtonClick('yoda')">YODA</button>
+            <button type="button" data-theme="lamar" onclick="handleButtonClick('lamar')">LAMAR</button>
+        </div>
+        <div class="button-row">
+            <button type="button" onclick="sendMessage()">Send</button>
+        </div>
+        </div>
+    </div>
+</body>
+</html>
